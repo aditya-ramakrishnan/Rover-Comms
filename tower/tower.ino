@@ -21,7 +21,7 @@ void loop() {
   if (radio.available()) {
     char text[32] = "";
     radio.read(&text, sizeof(text));
-    if (text != "Success!" && commandReceived == false) {
+    if (text != "1" && commandReceived == false) {
       Serial.println(text);
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
@@ -29,11 +29,11 @@ void loop() {
       radio.write(&text, sizeof(text));
       commandReceived = true;
     }
-    if (text == "Success" && commandReceived == true) {
+    if (text == "1" && commandReceived == true) {
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
-      const char confirm[] = "Success!";
+      const char confirm[] = "1";
       radio.write(&confirm, sizeof(confirm));
       commandReceived == false;
     }

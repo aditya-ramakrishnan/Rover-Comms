@@ -33,7 +33,6 @@ void loop() {
   command=Serial.readString();
   Serial.print(command);
   if(command.charAt(0)=='m') {
-    //command = "^" + command.substring(2);
     const char text[9] = {'^',command.charAt(2),command.charAt(3),command.charAt(4),command.charAt(5),command.charAt(6),command.charAt(7),command.charAt(8)};
     radio.write(&text, sizeof(text));
     //delay(100);
@@ -56,8 +55,8 @@ void loop() {
     if (radio.available()) {
       char confirm[32] = "";
       radio.read(&confirm, sizeof(confirm));
-      if (confirm == "Success!") {
-        Serial.println(confirm);
+      if (confirm == "1") {
+        Serial.println("Success!");
         break;
       }      
     }

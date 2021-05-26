@@ -1,7 +1,7 @@
+#include <DHT.h>  //Might have to install library for this, if you do just let me know and I'll give the link
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-boolean commandReceived = false;
 RF24 radio(7, 8); // CE, CSN
 
 const byte address[6] = "00001";
@@ -10,16 +10,17 @@ const byte address[6] = "00001";
 const int leftTrigPin(8), middleTrigPin(12), rightTrigPin(2);
 const int leftEchoPin(9), middleEchoPin(11), rightEchoPin(3);
 double leftDuration(0), middleDuration(0),  rightDuration(0);
-double leftDistance(0), middleDistance(0), rightDistance(0);
+int leftDistance(0), middleDistance(0), rightDistance(0);
 
 // Temperature Humidity Sensor
-#include <DHT.h>  //Might have to install library for this, if you do just let me know and I'll give the link
 #define DHTTYPE DHT11
 const int DHT11_PINLeft(13), DHT11_PINRight(7);
 DHT dhtLeft(DHT11_PINLeft, DHTTYPE);
 DHT dhtRight(DHT11_PINRight, DHTTYPE);
-double leftTemperature(0), rightTemperature(0); // You can change the variables to integer if easier, I couldn't figure out how to send doubles since I had a different setup in mind
-double leftHumidity(0), rightHumidity(0);
+int leftTemperature(0), rightTemperature(0); // You can change the variables to integer if easier, I couldn't figure out how to send doubles since I had a different setup in mind
+int leftHumidity(0), rightHumidity(0);
+
+String lT,rT,lH,rH,lD,mD,rD;
 
 void setup() {
   Serial.begin(9600);
@@ -77,28 +78,59 @@ void loop() {
       rightTemperature = dhtRight.readTemperature();  // rightTemperature contains temperature value(C)
       leftHumidity = dhtLeft.readHumidity();  // leftHumidity contains humidity value(%)
       rightHumidity = dhtRight.readHumidity();  // rightHumidity contains humidity value(%)
-
+      if (leftTemperature < 10) {lT = "0" + String(leftTemperature);}
+      if (rightTemperature < 10) {lT = "0" + String(rightTemperature);}
+      if (leftHumidity < 10) {lT = "0" + String(leftHumidity);}
+      if (rightHumidity < 10) {lT = "0" + String(rightHumidity);}
+      switch(leftDistance) {
+        case leftDistance <10:
+          lD = "000" + String(leftDistance);
+        case leftDistance <100:
+          lD = "00" + String(leftDistance);
+        case leftDistance <1000:
+          lD = "0" + String(leftDistance);
+      }
+      switch(middleDistance) {
+        case middleDistance <10:
+          mD = "000" + String(middleDistance);
+        case middleDistance <100:
+          mD = "00" + String(middleDistance);
+        case middleDistance <1000:
+          mD = "0" + String(middleDistance);
+      }
+      switch(rightDistance) {
+        case rightDistance <10:
+          rD = "000" + String(rightDistance);
+        case rightDistance <100:
+          rD = "00" + String(rightDistance);
+        case rightDistance <1000:
+          rD = "0" + String(rightDistance);
+      }
+      
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
-      const char confirm[] = "Success!";
-      radio.write(&confirm, sizeof(confirm));
+      const char data[] = {'s','d',lT.charAt(0),lT.charAt(1),',',' ',rT.charAt(0),rT.charAt(1),',',' ',lH.charAt(0),lH.charAt(1),',',' ',rH.charAt(0),rH.charAt(1),',',' ',lD.charAt(0),lD.charAt(1),lD.charAt(2),lD.charAt(3),',',' ',mD.charAt(0),mD.charAt(1),mD.charAt(2),mD.charAt(3),',',' ',rD.charAt(0),rD.charAt(1),rD.charAt(2),rD.charAt(3)};
+      radio.write(&data, sizeof(data));
+      delay(500);
     }
     else if (text == "V") {
       //drop a tower
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
-      const char confirm[] = "Success!";
+      const char confirm[] = "1";
       radio.write(&confirm, sizeof(confirm));
+      delay(500);
     }
     else {
       //turn the rover to a certain direction and move it the corresponding distance
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
-      const char confirm[] = "Success!";
+      const char confirm[] = "1";
       radio.write(&confirm, sizeof(confirm));
+      delay(500);
     }
   }
 }
