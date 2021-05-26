@@ -29,13 +29,22 @@ void loop() {
       radio.write(&text, sizeof(text));
       commandReceived = true;
     }
-    if (text == "1" && commandReceived == true) {
-      radio.openWritingPipe(address);
-      radio.setPALevel(RF24_PA_MIN);
-      radio.stopListening();
-      const char confirm[] = "1";
-      radio.write(&confirm, sizeof(confirm));
-      commandReceived == false;
+    else if (commandReceived == true) {
+      if (text == "1") {
+        radio.openWritingPipe(address);
+        radio.setPALevel(RF24_PA_MIN);
+        radio.stopListening();
+        const char confirm[] = "1";
+        radio.write(&confirm, sizeof(confirm));
+        commandReceived == false;
+      }
+      else if (text[0] == 's') {
+        radio.openWritingPipe(address);
+        radio.setPALevel(RF24_PA_MIN);
+        radio.stopListening();
+        radio.write(&text, sizeof(text));
+        commandReceived == false;
+      }
     }
   }
 }

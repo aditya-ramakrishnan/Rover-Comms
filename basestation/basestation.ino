@@ -58,7 +58,12 @@ void loop() {
       if (confirm == "1") {
         Serial.println("Success!");
         break;
-      }      
+      }
+      else if (confirm[0] == 's') {
+        Serial.print(confirm);
+        Serial.println(" -- Success!");
+        break;
+      }
     }
     if (counter == 100) {
       break;
