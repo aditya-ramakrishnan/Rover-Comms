@@ -8,15 +8,16 @@ RF24 radio(7, 8); // CE, CSN
 const byte address[6] = "00001";
 
 // Distance Sensor
-const int leftTrigPin(8), middleTrigPin(12), rightTrigPin(2);
-const int leftEchoPin(9), middleEchoPin(11), rightEchoPin(3);
+#define leftTrigPin A0
+const int middleTrigPin(4), rightTrigPin(2);
+const int leftEchoPin(6), middleEchoPin(5), rightEchoPin(3);
 double leftDuration(0), middleDuration(0),  rightDuration(0);
 int leftDistance(0), middleDistance(0), rightDistance(0);
 
 // Temperature Humidity Sensor
 #define DHTTYPE DHT11
-const int DHT11_PINLeft(13);
-#define DHT11_PINRight A0
+#define DHT11_PINLeft A1
+#define DHT11_PINRight A2
 DHT dhtLeft(DHT11_PINLeft, DHTTYPE);
 DHT dhtRight(DHT11_PINRight, DHTTYPE);
 int leftTemperature(0), rightTemperature(0);
@@ -26,7 +27,9 @@ String lT,rT,lH,rH,lD,mD,rD;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(DHT11_PINRight, OUTPUT); //Analog Pin A0 to digital output
+  pinMode(leftTrigPin, OUTPUT); //Analog Pin A0 to digital output
+  pinMode(DHT11_PINLeft, OUTPUT); //Analog Pin A1 to digital output
+  pinMode(DHT11_PINRight, OUTPUT); //Analog Pin A2 to digital output
   dhtLeft.begin();
   dhtRight.begin();
   dhtLeft.read(DHT11_PINLeft);    // Initial Readings
