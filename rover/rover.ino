@@ -1,4 +1,5 @@
-#include <DHT.h>  //Might have to install library for this, if you do just let me know and I'll give the link
+#include <DHT.h>  //Might have to install library for these, if you do just let me know and I'll give the link
+#include <Wire.h> //I2C functions
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -14,24 +15,29 @@ int leftDistance(0), middleDistance(0), rightDistance(0);
 
 // Temperature Humidity Sensor
 #define DHTTYPE DHT11
-const int DHT11_PINLeft(13), DHT11_PINRight(7);
+const int DHT11_PINLeft(13);
+#define DHT11_PINRight A0
 DHT dhtLeft(DHT11_PINLeft, DHTTYPE);
 DHT dhtRight(DHT11_PINRight, DHTTYPE);
-int leftTemperature(0), rightTemperature(0); // You can change the variables to integer if easier, I couldn't figure out how to send doubles since I had a different setup in mind
+int leftTemperature(0), rightTemperature(0);
 int leftHumidity(0), rightHumidity(0);
 
 String lT,rT,lH,rH,lD,mD,rD;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(DHT11_PINRight, OUTPUT); //Analog Pin A0 to digital output
   dhtLeft.begin();
   dhtRight.begin();
+  dhtLeft.read(DHT11_PINLeft);    // Initial Readings
+  dhtRight.read(DHT11_PINRight);  // Initial Readings
   pinMode(leftTrigPin, OUTPUT);
   pinMode(middleTrigPin, OUTPUT);
   pinMode(rightTrigPin, OUTPUT);
   pinMode(leftEchoPin, INPUT);
   pinMode(middleEchoPin, INPUT);
   pinMode(rightEchoPin, INPUT);
+  Wire.begin(2); // Join I2C connection with address #2
   radio.begin();
   radio.openReadingPipe(0, address);
   radio.setPALevel(RF24_PA_MIN);
@@ -116,6 +122,9 @@ void loop() {
     }
     else if (text == "V") {
       //drop a tower
+      Wire.write('V');
+      Wire.write(0);
+      Wire.write(0);
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
@@ -125,6 +134,11 @@ void loop() {
     }
     else {
       //turn the rover to a certain direction and move it the corresponding distance
+      Wire.write('^');
+      String degrees = text[1] + text[2] + text[3];
+      Wire.write(degrees.toInt());
+      String distance = text[4] + text[5] + text[6] + text[7];
+      Wire.write(degrees.toInt());
       radio.openWritingPipe(address);
       radio.setPALevel(RF24_PA_MIN);
       radio.stopListening();
