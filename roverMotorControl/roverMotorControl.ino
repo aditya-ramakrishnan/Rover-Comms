@@ -5,7 +5,7 @@
 const double SECONDS_TO_TURN_90 = 1;     //<--- Change 1 to how long it takes to turn 90 degrees in seconds
 const double SECONDS_TO_DRIVE_METER = 1; //<--- Change 1 to how long it takes to drive one meter in seconds
 
-bool secondTowerDropped(false), bottomTowerDropped(false); //Indicates if the towers have been dropped
+bool topTowerDropped(false), bottomTowerDropped(false); //Indicates if the towers have been dropped
 Servo servoMotorTop, servoMotorBottom; //Constructs both Servo Motors
 int anglePositionTop(0), anglePositionBottom(0); // Starting angles of the Servo Motors in degrees
 
@@ -15,8 +15,8 @@ AF_DCMotor frontRightDC(2);
 AF_DCMotor backLeftDC(3);
 AF_DCMotor backRightDC(4);
 
-int frontLeftStraight(100), frontRightStraight(100), backLeftStraight(100), backRightStraight(100); // <--- Change 50 to speed when driving straight(0 to 255)
-int frontLeftTurn(50), frontRightTurn(50), backLeftTurn(50), backRightTurn(50); // <--- Change 0 to speed when turning(0 to 255, probably lower than straight to prevent tipping)
+int frontLeftStraight(100), frontRightStraight(100), backLeftStraight(100), backRightStraight(100); // <--- Change 10 to speed when driving straight(0 to 255)
+int frontLeftTurn(50), frontRightTurn(50), backLeftTurn(50), backRightTurn(50); // <--- Change 50 to speed when turning(0 to 255, probably lower than straight speed to prevent tipping)
 
 void setup() {
   Wire.begin(2); // Join I2C connection with address #2
@@ -123,9 +123,9 @@ void receiveEvent(int howMany) { //Commented out section for if we have time
       servoMotorBottom.write(90);
       bottomTowerDropped = true;
     }
-    else if(!secondTowerDropped) { // Top Tower Drop
+    else if(!topTowerDropped) { // Top Tower Drop
       servoMotorTop.write(90);
-      secondTowerDropped = true;
+      topTowerDropped = true;
     }
     else { //No more towers
       // Blink LED?
